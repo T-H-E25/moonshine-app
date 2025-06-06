@@ -1,22 +1,38 @@
-# Moonshine App
+# Moonshine App 🌙
 
-A full-stack application built with React and Supabase for sharing and discovering moonshine recipes.
+A full-stack application for sharing and discovering moonshine recipes, built with React and Supabase.
 
-## Technologies Used
-- React
-- Vite
-- Supabase
-- TailwindCSS
-- TypeScript
+## 🚀 Quick Start
 
-## Getting Started
-1. Clone the repository
-2. Install dependencies: `npm install`
-3. Create a `.env` file with your Supabase credentials
-4. Run the development server: `npm run dev`
+```bash
+# Install dependencies
+npm install
 
-## Features
-- User authentication
-- Recipe creation and sharing
-- Recipe browsing and search
-- Dark/Light mode
+# Start development server
+npm run dev
+```
+
+## 🛠️ Tech Stack
+
+- **Frontend:** React + TypeScript + Vite
+- **Styling:** TailwindCSS
+- **Backend:** Supabase
+- **Authentication:** Supabase Auth
+- **Database:** PostgreSQL (via Supabase)
+
+## 🔑 Environment Setup
+
+Create a `.env` file in the project root:
+
+```env
+VITE_SUPABASE_URL=your_supabase_url
+VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
+```
+
+## ✨ Features
+
+- 👤 User authentication
+- 📝 Create and share recipes
+- 🔍 Search and browse recipes
+- 🌓 Dark/Light mode toggle
+- 📱 Responsive design
