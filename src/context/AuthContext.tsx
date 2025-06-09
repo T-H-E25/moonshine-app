@@ -107,7 +107,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       });
       
       if (error) {
-        toast.error(error.message);
+        // Check for specific email confirmation error
+        if (error.message === 'Email not confirmed') {
+          toast.error('Please check your email to confirm your account before logging in.');
+        } else {
+          toast.error(error.message);
+        }
         return { error };
       }
       
