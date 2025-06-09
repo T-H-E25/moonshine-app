@@ -20,44 +20,24 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   useEffect(() => {
     const getCurrentUser = async () => {
       try {
-        const { data: { session } } = await supabase.auth.getSession();
+        const { data } = await supabase.auth.getSession();
         
-        if (session?.user) {
-          // Try to fetch profile, but don't fail if it doesn't exist
-          try {
-            const { data: profileData, error: profileError } = await supabase
-              .from('profiles')
-              .select('*')
-              .eq('id', session.user.id)
-              .single();
+        if (data.session?.user) {
+          const { data: profileData } = await supabase
+            .from('profiles')
+            .select('*')
+            .eq('id', data.session.user.id)
+            .single();
             
-            if (profileError && profileError.code !== 'PGRST116') {
-              // PGRST116 is "not found" error, which is acceptable
-              console.warn('Profile fetch error:', profileError);
-            }
-              
-            setUser({
-              id: session.user.id,
-              username: profileData?.username || session.user.email?.split('@')[0] || 'User',
-              avatar_url: profileData?.avatar_url || session.user.user_metadata?.avatar_url,
-              bio: profileData?.bio,
-            });
-          } catch (profileError) {
-            console.warn('Profile fetch failed, using basic user data:', profileError);
-            // Still set user with basic info if profile fetch fails
-            setUser({
-              id: session.user.id,
-              username: session.user.email?.split('@')[0] || 'User',
-              avatar_url: session.user.user_metadata?.avatar_url,
-              bio: undefined,
-            });
-          }
-        } else {
-          setUser(null);
+          setUser({
+            id: data.session.user.id,
+            username: profileData?.username || data.session.user.email?.split('@')[0] || 'User',
+            avatar_url: profileData?.avatar_url || data.session.user.user_metadata?.avatar_url,
+            bio: profileData?.bio,
+          });
         }
       } catch (error) {
         console.error('Error getting current user:', error);
-        setUser(null);
       } finally {
         setLoading(false);
       }
@@ -67,75 +47,46 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     const { data: authListener } = supabase.auth.onAuthStateChange(
       async (event, session) => {
-        console.log('Auth state changed:', event, session?.user?.id);
-        
         if (event === 'SIGNED_IN' && session?.user) {
-          try {
-            // Try to get existing profile first
-            const { data: existingProfile, error: fetchError } = await supabase
+          // Check if profile exists, create if it doesn't
+          const { data: existingProfile } = await supabase
+            .from('profiles')
+            .select('*')
+            .eq('id', session.user.id)
+            .single();
+
+          if (!existingProfile) {
+            // Create profile for new user
+            const username = session.user.user_metadata?.full_name?.replace(/\s+/g, '') ||
+                            session.user.user_metadata?.name?.replace(/\s+/g, '') ||
+                            session.user.email?.split('@')[0] ||
+                            'User';
+
+            await supabase
               .from('profiles')
-              .select('*')
-              .eq('id', session.user.id)
-              .single();
-
-            if (fetchError && fetchError.code === 'PGRST116') {
-              // Profile doesn't exist, create it
-              const username = session.user.user_metadata?.full_name?.replace(/\s+/g, '') ||
-                              session.user.user_metadata?.name?.replace(/\s+/g, '') ||
-                              session.user.email?.split('@')[0] ||
-                              'User';
-
-              const { error: insertError } = await supabase
-                .from('profiles')
-                .insert({
-                  id: session.user.id,
-                  username: username,
-                  avatar_url: session.user.user_metadata?.avatar_url,
-                  bio: null
-                });
-
-              if (insertError) {
-                console.warn('Failed to create profile:', insertError);
-              }
-
-              // Set user data regardless of profile creation success
-              setUser({
+              .insert({
                 id: session.user.id,
                 username: username,
                 avatar_url: session.user.user_metadata?.avatar_url,
-                bio: null,
+                bio: null
               });
-            } else if (!fetchError && existingProfile) {
-              // Profile exists, use it
-              setUser({
-                id: session.user.id,
-                username: existingProfile.username,
-                avatar_url: existingProfile.avatar_url || session.user.user_metadata?.avatar_url,
-                bio: existingProfile.bio,
-              });
-            } else {
-              // Other error, use basic user data
-              console.warn('Profile fetch error:', fetchError);
-              setUser({
-                id: session.user.id,
-                username: session.user.email?.split('@')[0] || 'User',
-                avatar_url: session.user.user_metadata?.avatar_url,
-                bio: null,
-              });
-            }
+          }
 
-            if (event === 'SIGNED_IN') {
-              toast.success('Welcome back!');
-            }
-          } catch (error) {
-            console.error('Error handling auth state change:', error);
-            // Still set basic user data on error
-            setUser({
-              id: session.user.id,
-              username: session.user.email?.split('@')[0] || 'User',
-              avatar_url: session.user.user_metadata?.avatar_url,
-              bio: null,
-            });
+          const { data: profileData } = await supabase
+            .from('profiles')
+            .select('*')
+            .eq('id', session.user.id)
+            .single();
+            
+          setUser({
+            id: session.user.id,
+            username: profileData?.username || session.user.email?.split('@')[0] || 'User',
+            avatar_url: profileData?.avatar_url || session.user.user_metadata?.avatar_url,
+            bio: profileData?.bio,
+          });
+
+          if (event === 'SIGNED_IN') {
+            toast.success('Welcome back!');
           }
         } else if (event === 'SIGNED_OUT') {
           setUser(null);
@@ -167,7 +118,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       
       return { error: null };
     } catch (error) {
-      console.error('Sign in error:', error);
       toast.error('An unexpected error occurred');
       return { error };
     }
@@ -193,7 +143,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       toast.success('Check your email to confirm your account!');
       return { error: null };
     } catch (error) {
-      console.error('Sign up error:', error);
       toast.error('An unexpected error occurred');
       return { error };
     }
@@ -215,7 +164,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       
       return { error: null };
     } catch (error) {
-      console.error('Google sign in error:', error);
       toast.error('Failed to sign in with Google');
       return { error };
     }
@@ -232,7 +180,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       toast.success('Signed out successfully');
       return { error: null };
     } catch (error) {
-      console.error('Sign out error:', error);
       toast.error('An unexpected error occurred');
       return { error };
     }
