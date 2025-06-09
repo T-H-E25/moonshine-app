@@ -2,7 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { FlaskRound as Flask, Github, Twitter, Instagram } from 'lucide-react';
 
-export const APP_NAME: string = "MoonShin";
+export const APP_NAME: string = "Shinny";
 
 export const Footer: React.FC = () => {
   const currentYear = new Date().getFullYear();
