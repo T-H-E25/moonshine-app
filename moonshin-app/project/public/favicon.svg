@@ -1,3 +1,26 @@
-<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="#F59E0B">
-  <path stroke-linecap="round" stroke-linejoin="round" d="M9.75 3.104v5.714a2.25 2.25 0 0 1-.659 1.591L5 14.5M9.75 3.104c-.251.023-.501.05-.75.082m.75-.082a24.301 24.301 0 0 1 4.5 0m0 0v5.714c0 .597.237 1.17.659 1.591L19.8 15.3M14.25 3.104c.251.023.501.05.75.082M19.8 15.3l-1.57.393A9.065 9.065 0 0 1 12 15a9.065 9.065 0 0 1-6.23-.693L5 14.5m14.8.8 1.402 1.402c1.232 1.232.65 3.318-1.067 3.611A48.309 48.309 0 0 1 12 21a48.309 48.309 0 0 1-8.135-1.187c-1.717-.293-2.3-2.379-1.067-3.61L5 14.5" />
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <!-- Mason jar body -->
+  <rect x="25" y="35" width="50" height="55" rx="3" ry="3" 
+        fill="#E8F4FD" stroke="#4A90E2" stroke-width="2"/>
+  
+  <!-- Mason jar lid -->
+  <rect x="20" y="28" width="60" height="12" rx="2" ry="2" 
+        fill="#D4AF37" stroke="#B8860B" stroke-width="1.5"/>
+  
+  <!-- Lid ridges -->
+  <line x1="25" y1="31" x2="75" y2="31" stroke="#B8860B" stroke-width="0.5"/>
+  <line x1="25" y1="34" x2="75" y2="34" stroke="#B8860B" stroke-width="0.5"/>
+  <line x1="25" y1="37" x2="75" y2="37" stroke="#B8860B" stroke-width="0.5"/>
+  
+  <!-- Mason jar threading/screw pattern -->
+  <rect x="22" y="40" width="56" height="3" fill="none" stroke="#4A90E2" stroke-width="1"/>
+  
+  <!-- Liquid inside jar -->
+  <rect x="28" y="45" width="44" height="40" rx="2" ry="2" 
+        fill="#D4AF37" opacity="0.8"/>
+  
+  <!-- Letter "S" with oval outline -->
+  <ellipse cx="50" cy="60" rx="10" ry="12" fill="none" stroke="#4A90E2" stroke-width="0.8" opacity="0.4"/>
+  <text x="50" y="66" font-family="serif" font-size="14" font-weight="bold" 
+        text-anchor="middle" fill="#4A90E2" opacity="0.7">S</text>
 </svg>
