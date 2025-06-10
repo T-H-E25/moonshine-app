@@ -11,7 +11,13 @@ import { APP_NAME } from '../components/layout/Footer';
 
 const Register: React.FC = () => {
   const navigate = useNavigate();
-  const { signUp, signInWithGoogle, loading } = useAuth();
+  const { signUp, loading } = useAuth();
+
+  // Dummy fallback for signInWithGoogle if not present in context
+  const signInWithGoogle = async () => {
+    alert('Google sign-in is not implemented.');
+    return { error: { message: 'Not implemented' } };
+  };
   const [formData, setFormData] = useState({
     username: '',
     email: '',
@@ -30,6 +36,12 @@ const Register: React.FC = () => {
     }));
   };
 
+  interface AuthResponse {
+    error?: {
+      message: string;
+    };
+  }
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
@@ -39,9 +51,12 @@ const Register: React.FC = () => {
 
     setIsLoading(true);
     
-    const { error } = await signUp(formData.email, formData.password, formData.username);
+    const { error }: AuthResponse = await signUp(formData.email, formData.password);
     
-    if (!error) {
+    if (error) {
+      // Add error handling
+      alert(error.message);
+    } else {
       navigate('/login');
     }
     
@@ -50,7 +65,7 @@ const Register: React.FC = () => {
 
   const handleGoogleSignIn = async () => {
     setIsGoogleLoading(true);
-    const { error } = await signInWithGoogle();
+    await signInWithGoogle();
     setIsGoogleLoading(false);
     
     // Note: Google OAuth will redirect, so we don't need to navigate manually
@@ -113,8 +128,9 @@ const Register: React.FC = () => {
             <GoogleButton
               onClick={handleGoogleSignIn}
               isLoading={isGoogleLoading}
-              children="Sign up with Google"
-            />
+            >
+              Sign up with Google
+            </GoogleButton>
 
             <div className="relative">
               <div className="absolute inset-0 flex items-center">
